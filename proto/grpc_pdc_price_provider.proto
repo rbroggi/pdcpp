@@ -1,0 +1,65 @@
+syntax  = "proto3";
+
+package pdc_trade;
+
+message PdcTradePrices {
+  string trade_id = 1;
+  string gp_index = 2;
+  double pv = 3;
+  repeated double tc_prices = 4 [packed=true];
+  repeated double tg_prices = 5 [packed=true];
+
+  double bond_pv = 6;
+  repeated double bond_tc = 7 [packed=true];
+  repeated double bond_tg = 8 [packed=true];
+}
+
+message Empty {}
+
+message Bool {
+  bool value = 1;
+}
+
+message EventNum {
+    int32 value = 1;
+}
+
+message TradeId {
+    string trade_id = 1;
+}
+
+message TradeIds {
+    repeated string trade_ids = 1;
+}
+
+message GpId {
+    string gp_index = 1;
+}
+
+message Pv {
+    double pv = 1;
+}
+
+message RecordId {
+  string trade_id = 1;
+  string gp_index = 2;
+}
+
+message TradeIdMultiplierCollection {
+  string gp_index = 1;
+  map<string, double> trade_id_multiplier = 2;
+}
+
+service PdcTradePricesService {
+    rpc send_trade_prices_record (PdcTradePrices) returns (Bool) {}
+    rpc send_trade_prices_record_stream (stream PdcTradePrices) returns (EventNum) {}
+    rpc get_idc_trade_prices (RecordId) returns (PdcTradePrices) {}
+    rpc get_aggr_idc_trade_prices (TradeIdMultiplierCollection) returns (PdcTradePrices) {}
+    rpc notify_end_gp_records (GpId) returns (Bool) {}
+    rpc ping (Empty) returns (Bool) {}
+    rpc check_trades (TradeIds) returns (Bool) {}
+    rpc check_trade (TradeId) returns (Bool) {}
+    rpc get_pv(TradeId) returns(Pv) {}
+}
+
+

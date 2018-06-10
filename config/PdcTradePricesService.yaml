@@ -1,0 +1,7 @@
+type: google.api.Service
+config_version: 1
+
+http:
+ rules:
+ - selector: pdc_trade.PdcTradePricesService.ping
+   get: /v1/pdcpp/ping
