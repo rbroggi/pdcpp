@@ -5,7 +5,7 @@ import (
 	"testing"
 )
 
-var EPSILON float64 = 0.00000001
+var EPSILON = 0.00000001
 
 func TestComboMultiplePrices(t *testing.T) {
 	m := make(map[string]float64)
@@ -24,11 +24,11 @@ func TestComboMultiplePrices(t *testing.T) {
 			return []float64{0.0, 0.0, 0.0}
 		}
 	}
-	expected_result := []float64{-12.0, -12.0, -12.0}
+	expectedResult := []float64{-12.0, -12.0, -12.0}
 	result := comboMultiplePrices(m, f)
 	for i := range result {
-		if !floatEquals(result[i], expected_result[i]) {
-			t.Errorf("Expected result %v, differs from actual result %v, for index %v", expected_result[i], result[i], i)
+		if !floatEquals(result[i], expectedResult[i]) {
+			t.Errorf("Expected result %v, differs from actual result %v, for index %v", expectedResult[i], result[i], i)
 		}
 	}
 }
@@ -55,10 +55,10 @@ func TestSumSingle(t *testing.T) {
 			return 0.
 		}
 	}
-	expected_result := -10.0
+	expectedResult := -10.0
 	result := sumSingle(m, f)
-	if !floatEquals(result, expected_result) {
-		t.Errorf("Expected result %v, differs from actual result %v", expected_result, result)
+	if !floatEquals(result, expectedResult) {
+		t.Errorf("Expected result %v, differs from actual result %v", expectedResult, result)
 	}
 
 }

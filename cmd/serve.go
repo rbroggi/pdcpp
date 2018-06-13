@@ -43,8 +43,10 @@ var serveCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("Couldn't parse flags")
 		}
-		go startServing(fl)
-		return serveHTTP(fl)
+		if *fl.httpProxy {
+			return serveHTTP(fl)
+		}
+		return startServing(fl)
 	},
 }
 
@@ -52,56 +54,63 @@ func init() {
 	//adds this command as child of rootCmd
 	rootCmd.AddCommand(serveCmd)
 	//Parsing flags
-	serveCmd.Flags().Bool(options.Tls_c, false, "Connection uses TLS if true, else plain TCP")
-	serveCmd.Flags().String(options.Cert_file_c, "", "The TLS cert file")
-	serveCmd.Flags().String(options.Key_file_c, "", "The TLS key file")
-	serveCmd.Flags().IntP(options.Port_c, "p", 12889, "The server port - default 12889")
-	serveCmd.Flags().Int(options.PortHttp_c, 22888, "The http reverse proxy server port - default 22888")
-	serveCmd.Flags().Int(options.GpNum_c, 52, "The server port")
+	serveCmd.Flags().Bool(options.TLS, false, "Connection uses TLS if true, else plain TCP")
+	serveCmd.Flags().Bool(options.HTTPReverseProxy, false, "Starts an HTTP reverse proxy server which connects to the GRPC server")
+	serveCmd.Flags().String(options.CertFile, "", "The TLS cert file")
+	serveCmd.Flags().String(options.KeyFile, "", "The TLS key file")
+	serveCmd.Flags().IntP(options.Port, "p", 12889, "The server port - default 12889")
+	serveCmd.Flags().Int(options.PortHTTP, 22888, "The http reverse proxy server port - default 22888")
+	serveCmd.Flags().Int(options.GpNUM, 52, "The server port")
 }
 
 //Store flags
 type serveFlags struct {
-	tls      *bool
-	certFile *string
-	keyFile  *string
-	port     *int
-	httpPort *int
-	gpNum    *int
+	tls       *bool
+	certFile  *string
+	keyFile   *string
+	port      *int
+	httpPort  *int
+	gpNum     *int
+	httpProxy *bool
 }
 
 func retreiveFlags(cmd *cobra.Command) (serveFlags, error) {
-	tls, err := cmd.Flags().GetBool(options.Tls_c)
+	tls, err := cmd.Flags().GetBool(options.TLS)
 	if err != nil {
-		return serveFlags{}, fmt.Errorf("Error while parsing flag tls")
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.TLS)
 	}
-	certFile, err := cmd.Flags().GetString(options.Cert_file_c)
+	certFile, err := cmd.Flags().GetString(options.CertFile)
 	if err != nil {
-		return serveFlags{}, fmt.Errorf("Error while parsing flag cert_file")
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.CertFile)
 	}
-	keyFile, err := cmd.Flags().GetString(options.Key_file_c)
+	keyFile, err := cmd.Flags().GetString(options.KeyFile)
 	if err != nil {
-		return serveFlags{}, fmt.Errorf("Error while parsing flag key_file")
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.KeyFile)
 	}
-	port, err := cmd.Flags().GetInt(options.Port_c)
+	port, err := cmd.Flags().GetInt(options.Port)
 	if err != nil {
-		return serveFlags{}, fmt.Errorf("Error while parsing flag port")
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.Port)
 	}
-	httpPort, err := cmd.Flags().GetInt(options.PortHttp_c)
+	httpPort, err := cmd.Flags().GetInt(options.PortHTTP)
 	if err != nil {
-		return serveFlags{}, fmt.Errorf("Error while parsing flag http port")
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.PortHTTP)
 	}
-	gpNum, err := cmd.Flags().GetInt(options.GpNum_c)
+	gpNum, err := cmd.Flags().GetInt(options.GpNUM)
 	if err != nil {
-		return serveFlags{}, fmt.Errorf("Error while parsing flag gpNum")
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.GpNUM)
+	}
+	httpRevProxy, err := cmd.Flags().GetBool(options.HTTPReverseProxy)
+	if err != nil {
+		return serveFlags{}, fmt.Errorf("Error while parsing flag %v", options.HTTPReverseProxy)
 	}
 	return serveFlags{
-		tls:      &tls,
-		certFile: &certFile,
-		keyFile:  &keyFile,
-		port:     &port,
-		httpPort: &httpPort,
-		gpNum:    &gpNum,
+		tls:       &tls,
+		certFile:  &certFile,
+		keyFile:   &keyFile,
+		port:      &port,
+		httpPort:  &httpPort,
+		gpNum:     &gpNum,
+		httpProxy: &httpRevProxy,
 	}, nil
 }
 

@@ -9,27 +9,31 @@ import (
 
 //flag variable names
 const (
-	Tls_c                  = "tls"
-	Cert_file_c            = "cert_file"
-	Key_file_c             = "key_file"
-	Port_c                 = "port"
-	PortHttp_c             = "http_port"
-	GpNum_c                = "gpNum"
-	Ca_file_c              = "ca_file"
-	Server_host_override_c = "server_host_override"
-	Timeout_c              = "timeout"
-	Address_s              = "addr"
+	TLS                = "tls"
+	CertFile           = "cert_file"
+	KeyFile            = "key_file"
+	Port               = "port"
+	PortHTTP           = "http_port"
+	GpNUM              = "gpNum"
+	CaFile             = "ca_file"
+	ServerHostOverride = "server_host_override"
+	Timeout            = "timeout"
+	Address            = "addr"
+	HTTPReverseProxy   = "http_reverse_proxy"
 )
 
+//ClientOpt is a struct containing authentication info for client connections
 type ClientOpt struct {
-	Tls                *bool
+	TLS                *bool
 	CaFile             *string
 	ServerHostOverride *string
 }
 
+//GetClientOptions returns a []grpc.DialOption describing the connection options for a
+//grpc client
 func GetClientOptions(f ClientOpt) ([]grpc.DialOption, error) {
 	var opts []grpc.DialOption
-	if *f.Tls {
+	if *f.TLS {
 		if *f.CaFile == "" {
 			*f.CaFile = testdata.Path("ca.pem")
 		}

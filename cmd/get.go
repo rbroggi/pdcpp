@@ -41,28 +41,28 @@ var getCmd = &cobra.Command{
 		return nil
 	},
 	RunE: func(cmd *cobra.Command, args []string) error {
-		addr, err := cmd.Flags().GetString(opt.Address_s)
+		addr, err := cmd.Flags().GetString(opt.Address)
 		if err != nil {
-			return fmt.Errorf("Error while parsing %v", opt.Address_s)
+			return fmt.Errorf("Error while parsing %v", opt.Address)
 		}
-		tls, err := cmd.Flags().GetBool(opt.Tls_c)
+		tls, err := cmd.Flags().GetBool(opt.TLS)
 		if err != nil {
-			return fmt.Errorf("Error while parsing flag %v", opt.Tls_c)
+			return fmt.Errorf("Error while parsing flag %v", opt.TLS)
 		}
-		caFile, err := cmd.Flags().GetString(opt.Ca_file_c)
+		caFile, err := cmd.Flags().GetString(opt.CaFile)
 		if err != nil {
-			return fmt.Errorf("Error while parsing flag %v", opt.Ca_file_c)
+			return fmt.Errorf("Error while parsing flag %v", opt.CaFile)
 		}
-		oHost, err := cmd.Flags().GetString(opt.Server_host_override_c)
+		oHost, err := cmd.Flags().GetString(opt.ServerHostOverride)
 		if err != nil {
-			return fmt.Errorf("Error while parsing %v", opt.Server_host_override_c)
+			return fmt.Errorf("Error while parsing %v", opt.ServerHostOverride)
 		}
-		timeout, err := cmd.Flags().GetDuration(opt.Timeout_c)
+		timeout, err := cmd.Flags().GetDuration(opt.Timeout)
 		if err != nil {
-			return fmt.Errorf("Error while parsing %v", opt.Timeout_c)
+			return fmt.Errorf("Error while parsing %v", opt.Timeout)
 		}
 		clientOpt := opt.ClientOpt{
-			Tls:                &tls,
+			TLS:                &tls,
 			CaFile:             &caFile,
 			ServerHostOverride: &oHost,
 		}
@@ -91,9 +91,9 @@ var getCmd = &cobra.Command{
 
 func init() {
 	rootCmd.AddCommand(getCmd)
-	getCmd.Flags().Bool(opt.Tls_c, false, "Connection uses TLS if true, else plain TCP")
-	getCmd.Flags().String(opt.Ca_file_c, "", "The file containning the CA root cert file")
-	getCmd.Flags().String(opt.Server_host_override_c, "", "The server name use to verify the hostname returned by TLS handshake")
-	getCmd.Flags().String(opt.Address_s, "localhost:12889", "The address of the server <hostname:port>")
-	getCmd.Flags().Duration(opt.Timeout_c, 600, "Duration in seconds to timeout the request")
+	getCmd.Flags().Bool(opt.TLS, false, "Connection uses TLS if true, else plain TCP")
+	getCmd.Flags().String(opt.CaFile, "", "The file containning the CA root cert file")
+	getCmd.Flags().String(opt.ServerHostOverride, "", "The server name use to verify the hostname returned by TLS handshake")
+	getCmd.Flags().String(opt.Address, "localhost:12889", "The address of the server <hostname:port>")
+	getCmd.Flags().Duration(opt.Timeout, 600, "Duration in seconds to timeout the request")
 }

@@ -31,24 +31,24 @@ var pingCmd = &cobra.Command{
 	Args:  cobra.ExactArgs(1),
 	RunE: func(cmd *cobra.Command, args []string) error {
 		addr := args[0]
-		tls, err := cmd.Flags().GetBool(opt.Tls_c)
+		tls, err := cmd.Flags().GetBool(opt.TLS)
 		if err != nil {
-			return fmt.Errorf("Error while parsing flag %v", opt.Tls_c)
+			return fmt.Errorf("Error while parsing flag %v", opt.TLS)
 		}
-		caFile, err := cmd.Flags().GetString(opt.Ca_file_c)
+		caFile, err := cmd.Flags().GetString(opt.CaFile)
 		if err != nil {
-			return fmt.Errorf("Error while parsing flag %v", opt.Ca_file_c)
+			return fmt.Errorf("Error while parsing flag %v", opt.CaFile)
 		}
-		oHost, err := cmd.Flags().GetString(opt.Server_host_override_c)
+		oHost, err := cmd.Flags().GetString(opt.ServerHostOverride)
 		if err != nil {
-			return fmt.Errorf("Error while parsing %v", opt.Server_host_override_c)
+			return fmt.Errorf("Error while parsing %v", opt.ServerHostOverride)
 		}
-		timeout, err := cmd.Flags().GetDuration(opt.Timeout_c)
+		timeout, err := cmd.Flags().GetDuration(opt.Timeout)
 		if err != nil {
-			return fmt.Errorf("Error while parsing %v", opt.Timeout_c)
+			return fmt.Errorf("Error while parsing %v", opt.Timeout)
 		}
 		clientOpt := opt.ClientOpt{
-			Tls:                &tls,
+			TLS:                &tls,
 			CaFile:             &caFile,
 			ServerHostOverride: &oHost,
 		}
@@ -78,8 +78,8 @@ func init() {
 	// Here you will define your flags and configuration settings.
 
 	// pingCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
-	pingCmd.Flags().Bool(opt.Tls_c, false, "Connection uses TLS if true, else plain TCP")
-	pingCmd.Flags().String(opt.Ca_file_c, "", "The file containning the CA root cert file")
-	pingCmd.Flags().String(opt.Server_host_override_c, "", "The server name use to verify the hostname returned by TLS handshake")
-	pingCmd.Flags().Duration(opt.Timeout_c, 600, "Duration in seconds to timeout the request")
+	pingCmd.Flags().Bool(opt.TLS, false, "Connection uses TLS if true, else plain TCP")
+	pingCmd.Flags().String(opt.CaFile, "", "The file containning the CA root cert file")
+	pingCmd.Flags().String(opt.ServerHostOverride, "", "The server name use to verify the hostname returned by TLS handshake")
+	pingCmd.Flags().Duration(opt.Timeout, 600, "Duration in seconds to timeout the request")
 }

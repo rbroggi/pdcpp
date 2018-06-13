@@ -10,7 +10,7 @@ import (
 var instance *cache
 var once sync.Once
 
-//Represents a caching system with pb.PdcTradePrices being the cached items
+//Cache Represents a caching system with pb.PdcTradePrices being the cached items
 type Cache interface {
 	GetPrices(string, string) *pb.PdcTradePrices
 	GetPricesCombo(map[string]float64, string) *pb.PdcTradePrices
@@ -33,39 +33,39 @@ type cache struct {
 	gpSize     int
 }
 
-func (c *cache) GetPrices(t_id string, gp_idx string) *pb.PdcTradePrices {
+func (c *cache) GetPrices(tID string, gpIDX string) *pb.PdcTradePrices {
 	c.rwLock.RLock()
 	defer c.rwLock.RUnlock()
-	return c.activeMap[keyComposer(t_id, gp_idx)]
+	return c.activeMap[keyComposer(tID, gpIDX)]
 }
 
-func (c *cache) GetPricesCombo(inst_map map[string]float64, gp_idx string) *pb.PdcTradePrices {
+func (c *cache) GetPricesCombo(instMap map[string]float64, gpIDX string) *pb.PdcTradePrices {
 	c.rwLock.RLock()
 	defer c.rwLock.RUnlock()
 	return &pb.PdcTradePrices{
 		TradeId:  "",
-		GpIndex:  gp_idx,
-		Pv:       sumSingle(inst_map, func(s string) float64 { return c.activeMap[s].GetPv() }),
-		BondPv:   sumSingle(inst_map, func(s string) float64 { return c.activeMap[s].GetBondPv() }),
-		TcPrices: comboMultiplePrices(inst_map, func(s string) []float64 { return c.activeMap[s].GetTcPrices() }),
-		TgPrices: comboMultiplePrices(inst_map, func(s string) []float64 { return c.activeMap[s].GetTgPrices() }),
-		BondTc:   comboMultiplePrices(inst_map, func(s string) []float64 { return c.activeMap[s].GetBondTc() }),
-		BondTg:   comboMultiplePrices(inst_map, func(s string) []float64 { return c.activeMap[s].GetBondTg() }),
+		GpIndex:  gpIDX,
+		Pv:       sumSingle(instMap, func(s string) float64 { return c.activeMap[s].GetPv() }),
+		BondPv:   sumSingle(instMap, func(s string) float64 { return c.activeMap[s].GetBondPv() }),
+		TcPrices: comboMultiplePrices(instMap, func(s string) []float64 { return c.activeMap[s].GetTcPrices() }),
+		TgPrices: comboMultiplePrices(instMap, func(s string) []float64 { return c.activeMap[s].GetTgPrices() }),
+		BondTc:   comboMultiplePrices(instMap, func(s string) []float64 { return c.activeMap[s].GetBondTc() }),
+		BondTg:   comboMultiplePrices(instMap, func(s string) []float64 { return c.activeMap[s].GetBondTg() }),
 	}
 }
 
-func sumSingle(inst_map map[string]float64, f func(s string) float64) float64 {
+func sumSingle(instMap map[string]float64, f func(s string) float64) float64 {
 	sum := 0.0
-	for k, v := range inst_map {
+	for k, v := range instMap {
 		sum += f(k) * v
 	}
 	return sum
 }
 
-func comboMultiplePrices(inst_map map[string]float64, f func(string) []float64) []float64 {
+func comboMultiplePrices(instMap map[string]float64, f func(string) []float64) []float64 {
 
 	var sum []float64
-	for k, m := range inst_map {
+	for k, m := range instMap {
 		if len(sum) == 0 {
 			sum = make([]float64, len(f(k)))
 		}
@@ -96,13 +96,13 @@ func (c *cache) GetCompletedGps() int {
 	return len(c.gpSet)
 }
 
-func (c *cache) SetIdxGpComplete(gp_idx string) {
+func (c *cache) SetIdxGpComplete(gpIDX string) {
 	gpLock := new(sync.Mutex)
 	gpLock.Lock()
 	defer gpLock.Unlock()
-	log.Printf("Filling finished for gpIdx %v", gp_idx)
+	log.Printf("Filling finished for gpIdx %v", gpIDX)
 	c.gprwLock.Lock()
-	c.gpSet[gp_idx] = true
+	c.gpSet[gpIDX] = true
 	c.gprwLock.Unlock()
 	if c.GetCompletedGps() == c.gpSize {
 		log.Println("Maps switching...")
@@ -123,17 +123,17 @@ func (c *cache) SetIdxGpComplete(gp_idx string) {
 	}
 }
 
-func (c *cache) Contains(t_id string) bool {
+func (c *cache) Contains(tID string) bool {
 	c.rwLock.RLock()
 	defer c.rwLock.RUnlock()
-	_, ok := c.activeMap[keyComposer(t_id, "0")]
+	_, ok := c.activeMap[keyComposer(tID, "0")]
 	return ok
 }
 
-func (c *cache) GetPv(t_id string) float64 {
+func (c *cache) GetPv(tID string) float64 {
 	c.rwLock.RLock()
 	defer c.rwLock.RUnlock()
-	return c.activeMap[keyComposer(t_id, "0")].GetPv()
+	return c.activeMap[keyComposer(tID, "0")].GetPv()
 }
 
 func (c *cache) GetActiveContentLen() int {
@@ -148,7 +148,7 @@ func (c *cache) GetFillingContentLen() int {
 	return len(c.fillingMap)
 }
 
-//return cache singleton struct
+//GetCache returns a cache singleton struct
 func GetCache(gpSize int) Cache {
 	once.Do(func() {
 		instance = &cache{
