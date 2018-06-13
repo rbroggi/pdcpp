@@ -44,7 +44,7 @@ var serveCmd = &cobra.Command{
 			return fmt.Errorf("Couldn't parse flags")
 		}
 		go startServing(fl)
-		return serveHttp(fl)
+		return serveHTTP(fl)
 	},
 }
 
@@ -62,12 +62,12 @@ func init() {
 
 //Store flags
 type serveFlags struct {
-	tls       *bool
-	certFile  *string
-	keyFile   *string
-	port      *int
-	http_port *int
-	gpNum     *int
+	tls      *bool
+	certFile *string
+	keyFile  *string
+	port     *int
+	httpPort *int
+	gpNum    *int
 }
 
 func retreiveFlags(cmd *cobra.Command) (serveFlags, error) {
@@ -87,7 +87,7 @@ func retreiveFlags(cmd *cobra.Command) (serveFlags, error) {
 	if err != nil {
 		return serveFlags{}, fmt.Errorf("Error while parsing flag port")
 	}
-	http_port, err := cmd.Flags().GetInt(options.PortHttp_c)
+	httpPort, err := cmd.Flags().GetInt(options.PortHttp_c)
 	if err != nil {
 		return serveFlags{}, fmt.Errorf("Error while parsing flag http port")
 	}
@@ -96,12 +96,12 @@ func retreiveFlags(cmd *cobra.Command) (serveFlags, error) {
 		return serveFlags{}, fmt.Errorf("Error while parsing flag gpNum")
 	}
 	return serveFlags{
-		tls:       &tls,
-		certFile:  &certFile,
-		keyFile:   &keyFile,
-		port:      &port,
-		http_port: &http_port,
-		gpNum:     &gpNum,
+		tls:      &tls,
+		certFile: &certFile,
+		keyFile:  &keyFile,
+		port:     &port,
+		httpPort: &httpPort,
+		gpNum:    &gpNum,
 	}, nil
 }
 
@@ -131,7 +131,7 @@ func startServing(f serveFlags) error {
 	return grpcServer.Serve(lis)
 }
 
-func serveHttp(f serveFlags) error {
+func serveHTTP(f serveFlags) error {
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
 	defer cancel()
@@ -143,6 +143,6 @@ func serveHttp(f serveFlags) error {
 		return err
 	}
 
-	defer log.Printf("http reverse proxy serving at port %v", *f.http_port)
-	return http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *f.http_port), mux)
+	defer log.Printf("http reverse proxy serving at port %v", *f.httpPort)
+	return http.ListenAndServe(fmt.Sprintf("0.0.0.0:%d", *f.httpPort), mux)
 }

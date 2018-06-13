@@ -49,7 +49,7 @@ var getCmd = &cobra.Command{
 		if err != nil {
 			return fmt.Errorf("Error while parsing flag %v", opt.Tls_c)
 		}
-		ca_file, err := cmd.Flags().GetString(opt.Ca_file_c)
+		caFile, err := cmd.Flags().GetString(opt.Ca_file_c)
 		if err != nil {
 			return fmt.Errorf("Error while parsing flag %v", opt.Ca_file_c)
 		}
@@ -63,7 +63,7 @@ var getCmd = &cobra.Command{
 		}
 		clientOpt := opt.ClientOpt{
 			Tls:                &tls,
-			CaFile:             &ca_file,
+			CaFile:             &caFile,
 			ServerHostOverride: &oHost,
 		}
 		opts, err := opt.GetClientOptions(clientOpt)
